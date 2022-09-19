@@ -22,7 +22,7 @@ module.exports = {
       .then((result) => {
         // nodemailer stuff
         const authEmail = process.env.AUTH_EMAIL;
-        let authPass = process.env.PASS;
+        let authPass = process.env.APP_PASS;
 
         let transporter = nodemailer.createTransport({
           host: "smtp.gmail.com",
@@ -42,7 +42,7 @@ module.exports = {
 
             //mail option
             const mailOptions = {
-              from: "anshu.kumar551832@gmail.com",
+              from: authEmail,
               to: email,
               subject: "Verify your Email",
               html: `<p>Otp for authentification at Nodejs intern project for user id
