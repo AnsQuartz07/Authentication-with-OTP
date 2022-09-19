@@ -145,8 +145,8 @@ module.exports.bhoot = async (req,res) => {
     secure: true,
     service: "Gmail",
     auth: {
-      user: 'anshu.kumar551832@gmail.com',
-      pass: 'zthqvrfvdlzmpbhz' // 'Anshu@321fm',
+      user: process.env.AUTH_EMAIL,
+      pass: process.env.APP_PASS
     },
   });
   const sentOtp = async ( email ) => {
@@ -154,7 +154,7 @@ module.exports.bhoot = async (req,res) => {
       
       //mail option
       const mailOptions = {
-        from: "anshu.kumar551832@gmail.com",
+        from: process.env.AUTH_EMAIL,
         to: email,
         subject: "Tum bhootni ho",
         attachments: [
