@@ -12,11 +12,14 @@ module.exports.register = async (req, res) => {
     if (emailExist) {
       return res.status(400).json({ message: "Email already exists." });
     }
+    const otp = Math.floor(1000 + Math.random() * 9000);
     // Creating a new user
     const user = new User({
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
+      age: req.body.age,
+      otp: otp,
       verified: false, // by default it is set to false. Once otp verification complete then it will be true.
     }); // saving the user's informations
     let result = await user.save()
@@ -35,12 +38,11 @@ module.exports.register = async (req, res) => {
         pass: authPass,
       },
     });
-
+    
     //send otp function
-    const sendOTP = async ({ _id, email }, res) => {
+    const sendOTP = async ({ _id, email, otp }, res) => {
       try {
         // generating a random otp of four digits
-        const otp = Math.floor(1000 + Math.random() * 9000);
         //mail option
         const mailOptions = {
           from: authEmail,
@@ -77,9 +79,10 @@ module.exports.register = async (req, res) => {
       }
     };
     
-    sendOTP(result, res); // calling the function to send the otp
+    sendOTP(result, res, otp); // calling the function to send the otp
     
   } catch (err) {
+    console.log(err)
     res.status(500).json({ message : 'something went wrong',error: err });
   }
 }
@@ -102,17 +105,17 @@ module.exports.login = async (req, res) => {
 // send otp verification email
 module.exports.verify = async (req, res) => {
   // nodemailer stuff
-  const otpRecord = await UserOtp.findOne({ userId: req.body.userId });
-  //console.log("succeed")
-  if (req.body.otp === otpRecord.otp) {
-    await User.updateOne({ _id: req.body.userId }, { verified: true });
-    await UserOtp.deleteMany({ userId: req.body.userId });
+  const otpRecord = await User.findOne({ email: req.body.email });
+  console.log("succeed", req.body, otpRecord.otp)
+  if (req.body.otp == otpRecord.otp) {
+    await User.updateOne({ email: req.body.email }, {$set:{ verified: true} });
+    // await UserOtp.deleteMany({ userId: req.body.userId });
     res.json({
       status: "verified",
       message: "email verified successfully",
     });
   } else {
-    res.json({ err: error });
+    res.status(401).json({ err: 'Incorrect Otp' });
   }
 }
 
