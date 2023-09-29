@@ -2,7 +2,7 @@ const router = require("express").Router();
 const User = require("../models/User"); // Importing the user.js file so that we have accss of user.js file
 const UserOtp = require("../models/UserOTP");
 const nodemailer = require("nodemailer");
-const service = require('../Service/authService')
+// const service = require('../Service/authService')
 const cron = require('node-cron');
 
 module.exports.register = async (req, res) => {
